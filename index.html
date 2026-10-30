@@ -77,7 +77,6 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
   <div class="err" id="aErr"></div>
   <div class="acts"><button id="aCancel">Cancel</button><button class="pri" id="aGo">Sign in</button></div>
   <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
-    <button id="aGoogle">Continue with Google</button>
     <button class="link" id="aSwap">Create an account</button>
   </div>
 </div></div>
@@ -175,7 +174,6 @@ $("aGo").onclick=async()=>{
     afterAuth();
   }catch(err){$("aErr").textContent=err.message.replace("Firebase: ","")}
 };
-$("aGoogle").onclick=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider());afterAuth()}catch(err){$("aErr").textContent=err.message.replace("Firebase: ","")}};
 
 /* ---------- add / edit ---------- */
 function openForm(x){
