@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Showcase</title>
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--text:#1d1d1b;--mut:#6b6b66;--line:#e2e2dc;--acc:#2a5bd7;--accT:#fff;--danger:#c0392b;--new:#1a8f4d;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#171716;--card:#222221;--text:#f0efea;--mut:#9a9a93;--line:#3a3a37;--acc:#6b93f5;--accT:#10131c;--danger:#ff7b6b;--new:#4cc98a;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:16px 14px 60px}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+h1{font-size:22px;margin:0}
+.sub{color:var(--mut);font-size:13px}
+button,.tab{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);padding:7px 13px}
+button.pri{background:var(--acc);color:var(--accT);border-color:var(--acc)}
+button.dng{color:var(--danger)}
+button:disabled{opacity:.5;cursor:default}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.bar input[type=search]{flex:1;min-width:180px}
+.tab.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+input,textarea,select{width:100%;font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
+textarea{min-height:90px;resize:vertical}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.shots{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--line)}
+.shots.s1{grid-template-columns:1fr}.shots.s2{grid-template-columns:1fr 1fr}.shots.s3{grid-template-columns:repeat(3,1fr)}
+.shots img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;cursor:zoom-in}
+.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.body h3{margin:0;font-size:16px}
+.body p{margin:0;color:var(--mut);white-space:pre-wrap;word-break:break-word}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.tg{font-size:12px;border:1px solid var(--line);border-radius:20px;padding:0 8px;color:var(--mut)}
+.badge{font-size:11px;color:var(--new);border:1px solid var(--new);border-radius:20px;padding:0 7px;margin-left:6px;vertical-align:middle}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px}
+a.btn{text-decoration:none;background:var(--acc);color:var(--accT);padding:6px 12px;border-radius:8px;font-size:14px}
+.by{font-size:12px;color:var(--mut)}
+.empty{grid-column:1/-1;text-align:center;color:var(--mut);padding:50px 10px;border:1px dashed var(--line);border-radius:12px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px;z-index:20}
+.modal.show{display:flex}
+.panel{background:var(--card);border-radius:14px;width:100%;max-width:520px;padding:18px;border:1px solid var(--line)}
+.panel h2{margin:0 0 8px;font-size:18px}
+label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.th{position:relative;aspect-ratio:3/4;border:1px dashed var(--line);border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:12px;cursor:pointer;background:var(--bg)}
+.th img{width:100%;height:100%;object-fit:cover}
+.th .x{position:absolute;top:3px;right:3px;width:22px;height:22px;padding:0;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;border:0}
+.acts{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.err{color:var(--danger);font-size:13px;margin-top:8px;min-height:18px}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:30;cursor:zoom-out}
+#lb.show{display:flex}#lb img{max-width:95%;max-height:92%}
+.link{background:none;border:0;color:var(--acc);padding:0;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Project Showcase</h1><div class="sub">Discover apps and new projects from people.</div></div>
+    <div id="acct"></div>
+  </header>
+  <div class="bar">
+    <input type="search" id="q" placeholder="Search apps, tags, people…">
+    <button class="tab on" data-v="apps">🔍 Apps</button>
+    <button class="tab" data-v="mine">Mine</button>
+    <button class="pri" id="addP">+ Project</button>
+  </div>
+  <div id="list" class="grid"></div>
+</div>
+
+<div class="modal" id="authM"><div class="panel">
+  <h2 id="aT">Sign in</h2>
+  <div class="sub" id="aHint" style="display:none;margin-bottom:6px">To add your project, please create a free account first. Already have one? Tap “I have an account”.</div>
+  <div id="nameBox" style="display:none"><label>Your name</label><input id="aName" maxlength="40"></div>
+  <label>Email</label><input id="aEmail" type="email" autocomplete="email">
+  <label>Password</label><input id="aPass" type="password" autocomplete="current-password">
+  <div class="err" id="aErr"></div>
+  <div class="acts"><button id="aCancel">Cancel</button><button class="pri" id="aGo">Sign in</button></div>
+  <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+    <button id="aGoogle">Continue with Google</button>
+    <button class="link" id="aSwap">Create an account</button>
+  </div>
+</div></div>
+
+<div class="modal" id="formM"><div class="panel">
+  <h2 id="fT"></h2>
+  <label>Project name *</label><input id="fTitle" maxlength="80">
+  <label>App link *</label><input id="fUrl" type="url" placeholder="https://" maxlength="500">
+  <label>Description</label><textarea id="fDesc" maxlength="800"></textarea>
+  <label>Tags (comma separated)</label><input id="fTags" maxlength="100" placeholder="game, education, tool">
+  <label>Screenshots (max 4)</label><div class="thumbs" id="thumbs"></div>
+  <input type="file" id="file" accept="image/*" style="display:none">
+  <div class="err" id="fErr"></div>
+  <div class="acts"><button id="fCancel">Cancel</button><button class="pri" id="fSave">Save</button></div>
+</div></div>
+<div id="lb"><img alt=""></div>
+
+<script type="module">
+/* ====== 1. PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web) ====== */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  appId: "YOUR_APP_ID"
+};
+/* ================================================================================================== */
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signOut,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getFirestore,collection,doc,addDoc,setDoc,deleteDoc,query,orderBy,limit,onSnapshot} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+const $=i=>document.getElementById(i);
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const configured=!firebaseConfig.apiKey.startsWith("YOUR_");
+let pending=false,auth,db,me=null,view="apps",data={projects:[]},edit=null,signup=false;
+
+function safeUrl(u){try{const x=new URL(u);return /^https?:$/.test(x.protocol)?x.href:null}catch(e){return null}}
+
+/* ---------- render ---------- */
+function render(){
+  const L=$("list");L.textContent="";
+  if(!configured){L.appendChild(el("div","empty","Add your Firebase config in index.html to turn the site on."));return}
+  const q=$("q").value.trim().toLowerCase();
+  let items=data.projects.slice();
+  if(view==="mine")items=items.filter(x=>me&&x.ownerId===me.uid);
+  if(q)items=items.filter(x=>[x.title,x.desc,(x.tags||[]).join(" "),x.ownerName].join(" ").toLowerCase().includes(q));
+  items.sort((a,b)=>(b.updated||0)-(a.updated||0));
+  if(!items.length){L.appendChild(el("div","empty",q?"Nothing matches your search.":view==="mine"?(me?"You have not added any projects yet.":"Sign in to see your items."):"No projects yet — be the first!"));return}
+  const week=Date.now()-7*864e5;
+  items.forEach(x=>{
+    const c=el("div","card");
+    if(x.shots&&x.shots.length){
+      const s=el("div","shots s"+x.shots.length);
+      x.shots.forEach(src=>{const im=document.createElement("img");im.src=src;im.alt="";im.loading="lazy";im.onclick=()=>{$("lb").querySelector("img").src=src;$("lb").classList.add("show")};s.appendChild(im)});
+      c.appendChild(s);
+    }
+    const b=el("div","body");
+    const h=el("h3",null,x.title);
+    if((x.created||0)>week)h.appendChild(el("span","badge","New"));
+    b.appendChild(h);
+    if(x.desc)b.appendChild(el("p",null,x.desc));
+    if(x.tags&&x.tags.length){const t=el("div","tags");x.tags.forEach(g=>t.appendChild(el("span","tg",g)));b.appendChild(t)}
+    b.appendChild(el("div","by","by "+(x.ownerName||"Someone")+" · "+new Date(x.created||x.updated||0).toLocaleDateString()));
+    const r=el("div","row");
+    const href=x.url&&safeUrl(x.url);
+    if(href){const a=el("a","btn","Open app");a.href=href;a.target="_blank";a.rel="noopener noreferrer";r.appendChild(a)}
+    if(me&&x.ownerId===me.uid){
+      const e=el("button",null,"Edit");e.onclick=()=>openForm(x);
+      const d=el("button","dng","Remove");d.onclick=async()=>{if(confirm('Remove "'+x.title+'"?'))try{await deleteDoc(doc(db,"projects",x.id))}catch(e){alert("Could not remove: "+e.message)}};
+      r.append(e,d);
+    }
+    b.appendChild(r);c.appendChild(b);L.appendChild(c);
+  });
+}
+
+/* ---------- auth ---------- */
+function drawAcct(){
+  const a=$("acct");a.textContent="";
+  if(me){a.appendChild(el("span","sub",(me.displayName||me.email)+"  "));const o=el("button",null,"Sign out");o.onclick=()=>signOut(auth);a.appendChild(o)}
+  else{const i=el("button","pri","Sign in");i.onclick=()=>{pending=false;setMode(false,false);$("authM").classList.add("show")};a.appendChild(i)}
+}
+function setMode(su,hint){signup=su;$("nameBox").style.display=su?"block":"none";$("aT").textContent=su?"Create account":"Sign in";$("aGo").textContent=su?"Sign up":"Sign in";$("aSwap").textContent=su?"I have an account":"Create an account";$("aHint").style.display=hint?"block":"none";$("aErr").textContent=""}
+function needLogin(){if(me)return false;pending=true;setMode(true,true);$("authM").classList.add("show");return true}
+function afterAuth(){me=auth.currentUser;drawAcct();$("authM").classList.remove("show");if(pending){pending=false;openForm()}}
+$("aSwap").onclick=()=>setMode(!signup,pending);
+$("aCancel").onclick=()=>{pending=false;$("authM").classList.remove("show")};
+$("aGo").onclick=async()=>{
+  $("aErr").textContent="";
+  try{
+    const e=$("aEmail").value.trim(),p=$("aPass").value;
+    if(signup){const n=$("aName").value.trim();if(!n){$("aErr").textContent="Please enter your name.";return}
+      const cr=await createUserWithEmailAndPassword(auth,e,p);await updateProfile(cr.user,{displayName:n})}
+    else await signInWithEmailAndPassword(auth,e,p);
+    afterAuth();
+  }catch(err){$("aErr").textContent=err.message.replace("Firebase: ","")}
+};
+$("aGoogle").onclick=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider());afterAuth()}catch(err){$("aErr").textContent=err.message.replace("Firebase: ","")}};
+
+/* ---------- add / edit ---------- */
+function openForm(x){
+  if(needLogin())return;
+  edit={id:x?x.id:null,shots:x&&x.shots?x.shots.slice():[],created:x?x.created:null};
+  $("fT").textContent=x?"Edit project":"Add project";
+  $("fTitle").value=x?x.title:"";$("fUrl").value=x?x.url||"":"";$("fDesc").value=x?x.desc||"":"";$("fTags").value=x&&x.tags?x.tags.join(", "):"";
+  $("fErr").textContent="";thumbs();$("formM").classList.add("show");
+}
+function thumbs(){
+  const T=$("thumbs");T.textContent="";
+  for(let i=0;i<4;i++){
+    const d=el("div","th"),s=edit.shots[i];
+    if(s){const im=document.createElement("img");im.src=s;d.appendChild(im);const x=el("button","x","×");x.onclick=ev=>{ev.stopPropagation();edit.shots.splice(i,1);thumbs()};d.appendChild(x)}
+    else{d.textContent="+ Add";d.onclick=()=>{$("file").value="";$("file").click()}}
+    T.appendChild(d);
+  }
+}
+/* Screenshots are resized in the browser and stored inside the Firestore document (no paid Storage plan needed). */
+async function shrink(file){
+  const bm=await createImageBitmap(file),m=900,k=Math.min(1,m/Math.max(bm.width,bm.height));
+  const c=document.createElement("canvas");c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);
+  c.getContext("2d").drawImage(bm,0,0,c.width,c.height);return c.toDataURL("image/jpeg",.7);
+}
+$("file").onchange=async function(){
+  const f=this.files[0];if(!f||edit.shots.length>=4)return;
+  try{edit.shots.push(await shrink(f));$("fErr").textContent="";thumbs()}catch(e){$("fErr").textContent="Could not read that image."}
+};
+$("fCancel").onclick=()=>$("formM").classList.remove("show");
+$("fSave").onclick=async()=>{
+  const title=$("fTitle").value.trim();
+  if(!title){$("fErr").textContent="Please enter a project name.";return}
+  const rec={title,desc:$("fDesc").value.trim(),ownerId:me.uid,ownerName:me.displayName||(me.email||"").split("@")[0],updated:Date.now(),created:edit.created||Date.now()};
+  const u=safeUrl($("fUrl").value.trim());if(!u){$("fErr").textContent="Enter a valid link starting with http:// or https://";return}
+  rec.url=u;rec.shots=edit.shots.slice(0,4);
+  rec.tags=$("fTags").value.split(",").map(s=>s.trim().toLowerCase()).filter(Boolean).slice(0,6);
+  if(JSON.stringify(rec).length>900000){$("fErr").textContent="Screenshots are too large. Remove one or use smaller images.";return}
+  $("fSave").disabled=true;
+  try{
+    if(edit.id)await setDoc(doc(db,"projects",edit.id),rec);else await addDoc(collection(db,"projects"),rec);
+    $("formM").classList.remove("show");
+  }catch(e){$("fErr").textContent="Could not save: "+e.message}
+  $("fSave").disabled=false;
+};
+
+/* ---------- wiring ---------- */
+$("addP").onclick=()=>openForm();
+$("q").oninput=render;
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{view=b.dataset.v;document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t===b));render();if(view==="apps")$("q").focus()});
+$("q").onkeydown=e=>{if(e.key==="Enter"){view="apps";document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.v==="apps"));render();e.target.blur()}};
+$("lb").onclick=()=>$("lb").classList.remove("show");
+
+drawAcct();render();
+if(configured){
+  const app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app);
+  onAuthStateChanged(auth,u=>{me=u;drawAcct();render()});
+  onSnapshot(query(collection(db,"projects"),orderBy("updated","desc"),limit(300)),s=>{data.projects=s.docs.map(d=>({...d.data(),id:d.id}));render()},e=>console.error(e));
+}
+</script>
+</body>
+</html>
